@@ -13,6 +13,7 @@ yarn-error.log*
 package-lock.json
 waste_detection_app/frontend/node_modules/
 waste_detection_app/frontend/build/
+waste_detection_app/frontend/build-check/
 waste_detection_app/frontend/cf-pages-build*/
 
 # Python / backend
@@ -51,3 +52,9 @@ waste_detection_app/backend/best.pt
 *.log
 tmp/
 temp/
+
+# Local demo inputs / outputs
+input/
+output/
+results.csv
+detect
