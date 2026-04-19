@@ -1,8 +1,9 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import Webcam from 'react-webcam';
-import { Camera, CameraOff, Zap, FlipHorizontal } from 'lucide-react';
+import { Camera, CameraOff, Zap, FlipHorizontal, Square, X } from 'lucide-react';
 import { predictImage } from '../api';
 import DetectionResult from './DetectionResult';
+import DrawCanvas from './DrawCanvas';
 
 const s = {
   wrap: { position: 'relative' },
@@ -77,6 +78,28 @@ const s = {
     borderTopColor: 'var(--green)',
     animation: 'spin 0.8s linear infinite',
   },
+  annotationPanel: {
+    marginTop: '20px',
+    padding: '16px',
+    borderRadius: 'var(--radius-lg)',
+    border: '1px solid rgba(96,165,250,0.24)',
+    background: 'linear-gradient(135deg, rgba(96,165,250,0.08), rgba(74,222,128,0.05))',
+  },
+  annotationHead: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '14px',
+  },
+  annotationTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontFamily: 'var(--font-head)',
+    fontWeight: 700,
+    color: 'var(--text)',
+  },
 };
 
 export default function WebcamDetector() {
@@ -86,6 +109,7 @@ export default function WebcamDetector() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [autoDetect, setAutoDetect] = useState(false);
+  const [annotationFrame, setAnnotationFrame] = useState('');
   const autoRef = useRef(null);
 
   const capture = useCallback(async () => {
@@ -103,6 +127,14 @@ export default function WebcamDetector() {
     }
     setLoading(false);
   }, [loading]);
+
+  const captureForAnnotation = useCallback(() => {
+    if (!webcamRef.current) return;
+    const imageSrc = webcamRef.current.getScreenshot();
+    if (!imageSrc) return;
+    setAutoDetect(false);
+    setAnnotationFrame(imageSrc);
+  }, []);
 
   useEffect(() => {
     if (autoDetect && active) {
@@ -148,7 +180,7 @@ export default function WebcamDetector() {
       </div>
 
       <div style={s.controls}>
-        <button style={s.btn(active, active ? '#dc2626' : null)} onClick={() => { setActive(!active); setResult(null); }}>
+        <button style={s.btn(active, active ? '#dc2626' : null)} onClick={() => { setActive(!active); setResult(null); setAnnotationFrame(''); }}>
           {active ? <CameraOff size={14} /> : <Camera size={14} />}
           {active ? 'Stop' : 'Start Camera'}
         </button>
@@ -166,9 +198,34 @@ export default function WebcamDetector() {
               <FlipHorizontal size={14} />
               Flip
             </button>
+            <button style={s.btn(false, '#2563eb')} onClick={captureForAnnotation}>
+              <Square size={14} />
+              Capture & Annotate
+            </button>
           </>
         )}
       </div>
+
+      {annotationFrame && (
+        <div style={s.annotationPanel}>
+          <div style={s.annotationHead}>
+            <div style={s.annotationTitle}>
+              <Square size={14} color="#93c5fd" />
+              Annotate Captured Camera Frame
+            </div>
+            <button style={s.btn(false)} onClick={() => setAnnotationFrame('')}>
+              <X size={14} />
+              Close
+            </button>
+          </div>
+          <DrawCanvas
+            backgroundImage={annotationFrame}
+            defaultMode="annotation"
+            allowFreeDraw={false}
+            onResultChange={setResult}
+          />
+        </div>
+      )}
 
       {result && (
         <div style={{ marginTop: '20px' }}>
