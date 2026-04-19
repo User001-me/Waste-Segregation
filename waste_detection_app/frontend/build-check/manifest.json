@@ -1,0 +1,11 @@
+{
+  "short_name": "WasteAI",
+  "name": "WasteAI — Smart Waste Detection",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0a0f0a",
+  "background_color": "#0a0f0a",
+  "icons": [
+    { "src": "favicon.ico", "sizes": "64x64", "type": "image/x-icon" }
+  ]
+}

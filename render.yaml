@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: wasteai-backend
+    env: docker
+    rootDir: waste_detection_app/backend
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /health
+    disk:
+      name: wasteai-data
+      mountPath: /app/data
+      sizeGB: 5
+    envVars:
+      - key: APP_DATA_DIR
+        value: /app/data
+      - key: DATABASE_URL
+        value: sqlite:////app/data/waste_ai.db
