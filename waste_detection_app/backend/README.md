@@ -1,3 +1,11 @@
+---
+title: Waste Segregation Backend
+emoji: ♻️
+colorFrom: green
+colorTo: blue
+sdk: docker
+pinned: false
+---
 # WasteAI Backend
 
 FastAPI backend serving YOLOv8m waste detection model.
