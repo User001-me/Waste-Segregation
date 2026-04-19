@@ -65,6 +65,6 @@ The frontend URL will look like:
 
 The deploy script sets:
 
-`ADMIN_PASSWORD=WasteAI-Admin-2026!`
+`ADMIN_PASSWORD=iitbhu2026`
 
 Change it later in Hugging Face Space settings if you want a different password.

@@ -76,6 +76,6 @@ CMD ["python", "app.py"]
 | MODEL_PATH | best.pt | Path to YOLOv8 weights |
 | CONF_THRESH | 0.35 | Detection confidence threshold |
 | IOU_THRESH | 0.45 | NMS IoU threshold |
-| ADMIN_PASSWORD | admin123 | Admin panel password |
+| ADMIN_PASSWORD | iitbhu2026 | Admin panel password |
 | DATABASE_URL | sqlite:///waste_ai.db | Database connection |
 | APP_DATA_DIR | . | Directory used for SQLite, feedback images, and curated feedback dataset files |

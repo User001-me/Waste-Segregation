@@ -21,7 +21,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--admin-password",
-        default=os.getenv("WASTEAI_ADMIN_PASSWORD", "WasteAI-Admin-2026!"),
+        default=os.getenv("WASTEAI_ADMIN_PASSWORD", "iitbhu2026"),
         help="Admin password to store as a Hugging Face Space secret. Can also use WASTEAI_ADMIN_PASSWORD.",
     )
     parser.add_argument(
