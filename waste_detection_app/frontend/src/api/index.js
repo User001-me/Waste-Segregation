@@ -44,6 +44,8 @@ export const getFeedbackQueue = async (token) => {
   return res.data;
 };
 
+export const getApprovedFeedbackExportUrl = () => `${BASE_URL}/admin/feedback/export`;
+
 export const approveFeedback = async (token, feedbackId) => {
   const res = await api.post(`/admin/feedback/${feedbackId}/approve`, {}, {
     headers: { Authorization: `Bearer ${token}` }

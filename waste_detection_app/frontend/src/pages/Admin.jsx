@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ShieldCheck, CheckCircle, XCircle, RefreshCw, Lock, MessageSquare, Cpu, Tag } from 'lucide-react';
-import { getAdminStats, getFeedbackQueue, approveFeedback, rejectFeedback, triggerRetrain, adminLogin } from '../api';
+import { ShieldCheck, CheckCircle, XCircle, RefreshCw, Lock, MessageSquare, Cpu, Tag, Download } from 'lucide-react';
+import { getAdminStats, getFeedbackQueue, approveFeedback, rejectFeedback, triggerRetrain, adminLogin, getApprovedFeedbackExportUrl } from '../api';
 import { formatClassName, getBadgeMeta } from '../constants/waste';
 
 const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
@@ -191,6 +191,28 @@ export default function Admin() {
     setRetraining(false);
   };
 
+  const handleDownloadApproved = async () => {
+    try {
+      const res = await fetch(getApprovedFeedbackExportUrl(), {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        alert(error.detail || 'No approved feedback files found yet.');
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'wasteai-approved-feedback-dataset.zip';
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('Could not download approved feedback dataset.');
+    }
+  };
+
   if (!token) {
     return <div style={s.page}><LoginForm onLogin={handleLogin} /></div>;
   }
@@ -235,6 +257,10 @@ export default function Admin() {
             <button style={s.retrainBtn(retrainReady && !retraining)} onClick={handleRetrain} disabled={!retrainReady || retraining}>
               <RefreshCw size={12} style={retraining ? { animation: 'spin 0.8s linear infinite' } : {}} />
               {retraining ? 'Triggering...' : retrainReady ? 'Trigger Retrain' : `${approved}/500 corrections needed`}
+            </button>
+            <button style={s.approveBtn} onClick={handleDownloadApproved}>
+              <Download size={12} />
+              Download Approved Dataset
             </button>
           </div>
           <div style={s.progressWrap}>

@@ -2,10 +2,13 @@ import os
 import re
 import shutil
 import secrets
+import tempfile
+import zipfile
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from database import (
@@ -72,6 +75,31 @@ async def admin_stats(token: str = Depends(verify_token)):
 async def list_feedback(token: str = Depends(verify_token)):
     items = await get_pending_feedback(limit=100)
     return {"feedback": items, "count": len(items)}
+
+
+@router.get("/feedback/export")
+async def export_feedback_dataset(token: str = Depends(verify_token)):
+    if not APPROVED_DATA_DIR.exists():
+        raise HTTPException(status_code=404, detail="No feedback dataset found yet")
+
+    has_files = any(path.is_file() for path in APPROVED_DATA_DIR.rglob("*"))
+    if not has_files:
+        raise HTTPException(status_code=404, detail="No approved feedback files found yet")
+
+    temp = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+    temp_path = Path(temp.name)
+    temp.close()
+
+    with zipfile.ZipFile(temp_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for path in APPROVED_DATA_DIR.rglob("*"):
+            if path.is_file():
+                archive.write(path, path.relative_to(APPROVED_DATA_DIR.parent))
+
+    return FileResponse(
+        path=temp_path,
+        filename="wasteai-approved-feedback-dataset.zip",
+        media_type="application/zip",
+    )
 
 
 @router.post("/feedback/{feedback_id}/approve")
